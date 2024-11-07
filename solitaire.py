@@ -18,7 +18,6 @@ offset_x = 0
 offset_y = 0
 original_positions = []
 
-# Main game loop
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -31,16 +30,26 @@ while True:
                 col = tableau.get_column(col_idx)
                 if col and col[-1][0].revealed:
                     for i, (card, pos) in enumerate(col):
-                        if card.revealed:
-                            card_x, card_y = pos
-                            if card_x <= mouse_x <= card_x + card.image.get_width() and card_y <= mouse_y <= card_y + card.image.get_height():
-                                selected_column = col_idx
-                                selected_cards = col[i:]  
-                                original_positions = [pos for _, pos in selected_cards] 
-                                tableau.set_column(selected_column, col[:i])  
-                                offset_x = card_x - mouse_x
-                                offset_y = card_y - mouse_y
-                                break
+                        card_x, card_y = pos
+                        if card.revealed and card_x <= mouse_x <= card_x + card.image.get_width():
+                            if i == len(col) - 1:  
+                                if card_y <= mouse_y <= card_y + card.image.get_height():
+                                    selected_column = col_idx
+                                    selected_cards = col[i:]
+                                    original_positions = [pos for _, pos in selected_cards]
+                                    tableau.set_column(selected_column, col[:i])
+                                    offset_x = card_x - mouse_x
+                                    offset_y = card_y - mouse_y
+                                    break
+                            else:  
+                                if card_y <= mouse_y <= card_y + card.image.get_height() - 90:
+                                    selected_column = col_idx
+                                    selected_cards = col[i:]
+                                    original_positions = [pos for _, pos in selected_cards]
+                                    tableau.set_column(selected_column, col[:i])
+                                    offset_x = card_x - mouse_x
+                                    offset_y = card_y - mouse_y
+                                    break
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if selected_cards:
@@ -52,9 +61,9 @@ while True:
                     new_x = tableau.column_positions[closest_column_idx][0]
                     new_y = tableau.column_positions[closest_column_idx][1] + len(target_column) * 30
 
-                    for card, _ in selected_cards:
+                    for j, (card, _) in enumerate(selected_cards):
                         tableau.get_column(closest_column_idx).append((card, (new_x, new_y)))
-                        new_y += 30  
+                        new_y += 30 if j == 0 else 20  
 
                     if tableau.get_column(selected_column):
                         tableau.get_column(selected_column)[-1][0].revealed = True  
@@ -77,7 +86,8 @@ while True:
                 tableau.render(screen)  
 
                 for i, (card, _) in enumerate(selected_cards):
-                    screen.blit(card.image, (mouse_x + offset_x, mouse_y + offset_y + i * 20)) 
+                    y_offset = offset_y + (i * 20) if i > 0 else offset_y  
+                    screen.blit(card.image, (mouse_x + offset_x, mouse_y + y_offset))
 
                 pygame.display.flip() 
                 continue
