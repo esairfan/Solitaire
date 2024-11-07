@@ -54,7 +54,7 @@ while True:
 
                     for card, _ in selected_cards:
                         tableau.get_column(closest_column_idx).append((card, (new_x, new_y)))
-                        new_y += 30  # Stack cards vertically
+                        new_y += 30  
 
                     if tableau.get_column(selected_column):
                         tableau.get_column(selected_column)[-1][0].revealed = True  
