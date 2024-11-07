@@ -3,7 +3,7 @@ import pygame
 class Tableau:
     def __init__(self, deck):
         self.deck = deck
-        self.column_positions = [(50 + i * 100, 150) for i in range(7)]
+        self.column_positions = [(50 + i * (80+60), 220) for i in range(7)]
         self.cards_in_columns = [[] for _ in range(7)]
         self.setup_tableau()
 
