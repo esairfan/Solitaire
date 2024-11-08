@@ -1,7 +1,7 @@
 class Foundation:
     def __init__(self, suit):
         self.suit = suit
-        self.cards = []  # Corrected to 'cards' instead of 'card'
+        self.cards = []   
         self.rank_order = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
     def add_card(self, card):
@@ -13,7 +13,7 @@ class Foundation:
     def can_add_card(self, card):
         if not self.cards:
             return card.suit == self.suit and card.rank == 'A'
-        expected_rank = self.rank_order[len(self.cards)]  # Corrected 'card' to 'cards'
+        expected_rank = self.rank_order[len(self.cards)]  
         return card.suit == self.suit and card.rank == expected_rank
 
     def is_complete(self):
