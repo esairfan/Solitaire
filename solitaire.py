@@ -7,7 +7,7 @@ from stockandwaste import StockAndWaste
 
 pygame.init()
 
-width, height = 1200, 1000
+width, height = 1200, 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Solitaire Game')
 
