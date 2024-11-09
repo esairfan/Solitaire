@@ -16,7 +16,11 @@ class Card:
         self.rank = rank
         self.color = self.colors[suit]
         self.image = self.load_image()
-
+        self.revealed = False
+        
+    def reveal(self):
+        self.revealed = True
+        
     def load_image(self):
         image_path = f'assets/{self.rank}_of_{self.suit}.png'
         original_image = pygame.image.load(image_path)
