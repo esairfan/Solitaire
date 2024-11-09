@@ -15,7 +15,11 @@ pygame.display.set_caption('Solitaire Game')
 
 background_image = pygame.image.load('assets/background.jpg')
 background_image=pygame.transform.scale(background_image, (width, height))
-    
+
+pygame.mixer.music.load("assets/backgroundmusic.mp3")  
+pygame.mixer.music.set_volume(0.01) 
+pygame.mixer.music.play(-1)   
+
 deck = Deck()
 tableau = Tableau(deck)
 foundations = [Foundation(suit) for suit in ['hearts', 'diamonds', 'clubs', 'spades']]
