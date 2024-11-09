@@ -13,6 +13,10 @@ class Foundation:
     def can_add_card(self, card):
         if not self.cards:
             return card.suit == self.suit and card.rank == 'A'
+        
+        if len(self.cards) >= len(self.rank_order):
+            return False
+        
         expected_rank = self.rank_order[len(self.cards)]  
         return card.suit == self.suit and card.rank == expected_rank
 
