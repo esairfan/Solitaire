@@ -4,6 +4,7 @@ from deck import Deck
 from tableau import Tableau
 from foundation import Foundation
 from stockandwaste import StockAndWaste
+from gamecontrol import PauseMenu
 import time
 
 pygame.init()
@@ -11,7 +12,10 @@ pygame.init()
 width, height = 1200, 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Solitaire Game')
- 
+
+background_image = pygame.image.load('assets/background.jpg')
+background_image=pygame.transform.scale(background_image, (width, height))
+    
 deck = Deck()
 tableau = Tableau(deck)
 foundations = [Foundation(suit) for suit in ['hearts', 'diamonds', 'clubs', 'spades']]
@@ -20,49 +24,31 @@ stock_and_waste = StockAndWaste(deck)
 start_time = time.time()
 score = 0
  
+events = []
 selected_cards = []
 selected_column = None
 selected_foundation = None 
 offset_x, offset_y = 0, 0
 original_positions = []
- 
+pause_menu = PauseMenu()
 foundation_positions = [(500 + i * 100, 50) for i in range(4)]
- 
-def draw_gradient_background(surface):
-    w, h = surface.get_size()
-    rect = pygame.Rect(0, 0, w, h)
-    gradient = pygame.Surface(rect.size, pygame.SRCALPHA)
-    y1 = rect.top
-    y2 = rect.bottom
+is_paused = False
+pause_start_time = 0
 
-    red_range = 255 - 0
-    green_range = 255 - 128
-    blue_range = 224 - 0
-
-    for y in range(y1, y2):
-        ratio = (y - y1) / (y2 - y1)
-        red = int(0 + (red_range * ratio))
-        green = int(128 + (green_range * ratio))
-        blue = int(0 + (blue_range * ratio))
-        color = (red, green, blue)
-        line = pygame.Surface((w, 1), pygame.SRCALPHA)
-        line.fill(color)
-        gradient.blit(line, (0, y))
-    surface.blit(gradient, (0, 0))
- 
 def draw_foundations():
     for idx, foundation in enumerate(foundations):
         x, y = foundation_positions[idx]
-        if foundation.cards:
+        if foundation.cards: 
             screen.blit(foundation.cards[-1].image, (x, y))
-        else:
-            pygame.draw.rect(screen, (200, 200, 200), (x, y, 80, 120), 2)
+        else: 
+            pygame.draw.rect(screen, (192, 192, 192), (x, y, 80, 120), 2)
             font = pygame.font.SysFont('Arial', 15)
             suit_name = foundation.suit.capitalize()
-            text = font.render(suit_name, True, (0, 0, 0))
+            text = font.render(suit_name, True, (255, 255, 255))  
+                         
             text_rect = text.get_rect(center=(x + 40, y + 60))
             screen.blit(text, text_rect)
- 
+
 def handle_mouse_button_down(event):
     global selected_cards, selected_column, selected_foundation, offset_x, offset_y, original_positions
     mouse_x, mouse_y = event.pos
@@ -182,7 +168,7 @@ def draw_timer_and_score():
     screen.blit(score_surface, (1000, 50))
  
 def draw_game():
-    draw_gradient_background(screen)
+    screen.blit(background_image, (0, 0))
     tableau.render(screen)
     draw_foundations()
     stock_and_waste.draw(screen)
@@ -190,18 +176,30 @@ def draw_game():
 
 running = True
 while running:
-    draw_game()
+    events = pygame.event.get() 
+    if pause_menu.is_paused:
+        pause_menu.handle_events(screen,events)
+    else:
+        draw_game()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                handle_mouse_button_down(event)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                handle_mouse_button_up(event)
+            elif event.type == pygame.MOUSEMOTION:
+                handle_mouse_motion(event)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            handle_mouse_button_down(event)
-        elif event.type == pygame.MOUSEBUTTONUP:
-            handle_mouse_button_up(event)
-        elif event.type == pygame.MOUSEMOTION:
-            handle_mouse_motion(event)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                pause_menu.is_paused = not pause_menu.is_paused
+                is_paused = pause_menu.is_paused
+                if is_paused: 
+                    pause_start_time = time.time()
+                else: 
+                    start_time += time.time() - pause_start_time
 
+    pause_menu.draw(screen)
     pygame.display.flip()
 
 pygame.quit()
