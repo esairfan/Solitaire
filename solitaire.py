@@ -3,27 +3,31 @@ import sys
 from deck import Deck
 from tableau import Tableau
 from foundation import Foundation
-from stockandwaste import StockAndWaste 
+from stockandwaste import StockAndWaste
+import time
 
 pygame.init()
-
+ 
 width, height = 1200, 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Solitaire Game')
-
+ 
 deck = Deck()
 tableau = Tableau(deck)
 foundations = [Foundation(suit) for suit in ['hearts', 'diamonds', 'clubs', 'spades']]
 stock_and_waste = StockAndWaste(deck)
-
+ 
+start_time = time.time()
+score = 0
+ 
 selected_cards = []
 selected_column = None
 selected_foundation = None 
 offset_x, offset_y = 0, 0
 original_positions = []
-
+ 
 foundation_positions = [(500 + i * 100, 50) for i in range(4)]
-
+ 
 def draw_gradient_background(surface):
     w, h = surface.get_size()
     rect = pygame.Rect(0, 0, w, h)
@@ -45,7 +49,7 @@ def draw_gradient_background(surface):
         line.fill(color)
         gradient.blit(line, (0, y))
     surface.blit(gradient, (0, 0))
-
+ 
 def draw_foundations():
     for idx, foundation in enumerate(foundations):
         x, y = foundation_positions[idx]
@@ -58,7 +62,7 @@ def draw_foundations():
             text = font.render(suit_name, True, (0, 0, 0))
             text_rect = text.get_rect(center=(x + 40, y + 60))
             screen.blit(text, text_rect)
-
+ 
 def handle_mouse_button_down(event):
     global selected_cards, selected_column, selected_foundation, offset_x, offset_y, original_positions
     mouse_x, mouse_y = event.pos
@@ -99,9 +103,9 @@ def handle_mouse_button_down(event):
                         tableau.set_column(selected_column, col[:i])
                         offset_x, offset_y = card_x - mouse_x, card_y - mouse_y
                         break
-
+ 
 def handle_mouse_button_up(event):
-    global selected_cards, selected_column, selected_foundation
+    global selected_cards, selected_column, selected_foundation, score
     if not selected_cards:
         return
 
@@ -113,28 +117,28 @@ def handle_mouse_button_up(event):
         foundation_x, foundation_y = foundation_positions[idx]
         if foundation_x <= mouse_x <= foundation_x + 80 and foundation_y <= mouse_y <= foundation_y + 120:
             if len(selected_cards) == 1 and foundation.add_card(selected_cards[0][0]):
-                valid_move_made = True 
+                valid_move_made = True
+                score += 7   
                 if selected_column is not None:
-                    column = tableau.get_column(selected_column) 
- 
+                    column = tableau.get_column(selected_column)
                     if column:
                         top_card = column[-1][0]
                         if not top_card.revealed:
-                            top_card.revealed = True  
+                            top_card.revealed = True
                 break
  
     if not valid_move_made:
         closest_column_idx = min(range(7), key=lambda i: abs(tableau.column_positions[i][0] - mouse_x))
         target_column = tableau.get_column(closest_column_idx)
- 
         if tableau.is_valid_move(selected_cards[0][0], target_column):
             valid_move_made = True
+            score += 3
             new_x, new_y = tableau.column_positions[closest_column_idx][0], tableau.column_positions[closest_column_idx][1] + len(target_column) * 30
             for j, (card, _) in enumerate(selected_cards):
                 card.revealed = True
                 tableau.get_column(closest_column_idx).append((card, (new_x, new_y)))
                 new_y += 30 if j == 0 else 20
- 
+
             if selected_foundation is not None:
                 foundations[selected_foundation].cards.pop()
             elif selected_column is not None and tableau.get_column(selected_column):
@@ -143,23 +147,19 @@ def handle_mouse_button_up(event):
     if not valid_move_made:
         if moving_from_waste:
             stock_and_waste.waste_pile.append(selected_cards[0][0])
-        elif selected_column is not None:  
+        elif selected_column is not None:
             for card, original_pos in zip(selected_cards, original_positions):
                 tableau.get_column(selected_column).append((card[0], original_pos))
-
             if tableau.get_column(selected_column):
                 tableau.get_column(selected_column)[-1][0].revealed = True
- 
+
     selected_cards, selected_column, selected_foundation = [], None, None
     pygame.display.flip()
-
+ 
 def handle_mouse_motion(event):
     if selected_cards:
         mouse_x, mouse_y = event.pos
-        draw_gradient_background(screen)
-        tableau.render(screen)
-        draw_foundations()
-        stock_and_waste.draw(screen)
+        draw_game()
 
         for i, (card, _) in enumerate(selected_cards):
             y_offset = offset_y + (i * 20) if i > 0 else offset_y
@@ -167,11 +167,34 @@ def handle_mouse_motion(event):
 
         pygame.display.flip()
  
-while True:
+def draw_timer_and_score():
+    current_time = time.time() - start_time
+    minutes = int(current_time // 60)
+    seconds = int(current_time % 60)
+    time_text = f"Time: {minutes:02}:{seconds:02}"
+    score_text = f"Score: {score}"
+
+    font = pygame.font.SysFont('Arial', 24)
+    time_surface = font.render(time_text, True, (255, 255, 255))
+    score_surface = font.render(score_text, True, (255, 255, 255))
+
+    screen.blit(time_surface, (1000, 20))
+    screen.blit(score_surface, (1000, 50))
+ 
+def draw_game():
+    draw_gradient_background(screen)
+    tableau.render(screen)
+    draw_foundations()
+    stock_and_waste.draw(screen)
+    draw_timer_and_score()
+
+running = True
+while running:
+    draw_game()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             handle_mouse_button_down(event)
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -179,8 +202,7 @@ while True:
         elif event.type == pygame.MOUSEMOTION:
             handle_mouse_motion(event)
 
-    draw_gradient_background(screen)
-    tableau.render(screen)
-    draw_foundations()
-    stock_and_waste.draw(screen)
     pygame.display.flip()
+
+pygame.quit()
+sys.exit()
