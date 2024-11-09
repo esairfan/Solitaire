@@ -23,7 +23,8 @@ stock_and_waste = StockAndWaste(deck)
  
 start_time = time.time()
 score = 0
- 
+moves = 0 
+font = pygame.font.SysFont("Arial", 30)
 events = []
 selected_cards = []
 selected_column = None
@@ -91,7 +92,7 @@ def handle_mouse_button_down(event):
                         break
  
 def handle_mouse_button_up(event):
-    global selected_cards, selected_column, selected_foundation, score
+    global selected_cards, selected_column, selected_foundation, score ,moves
     if not selected_cards:
         return
 
@@ -104,7 +105,9 @@ def handle_mouse_button_up(event):
         if foundation_x <= mouse_x <= foundation_x + 80 and foundation_y <= mouse_y <= foundation_y + 120:
             if len(selected_cards) == 1 and foundation.add_card(selected_cards[0][0]):
                 valid_move_made = True
-                score += 7   
+                score += 7
+                moves+=1  
+                 
                 if selected_column is not None:
                     column = tableau.get_column(selected_column)
                     if column:
@@ -119,6 +122,8 @@ def handle_mouse_button_up(event):
         if tableau.is_valid_move(selected_cards[0][0], target_column):
             valid_move_made = True
             score += 3
+            moves+=1
+            
             new_x, new_y = tableau.column_positions[closest_column_idx][0], tableau.column_positions[closest_column_idx][1] + len(target_column) * 30
             for j, (card, _) in enumerate(selected_cards):
                 card.revealed = True
@@ -152,20 +157,23 @@ def handle_mouse_motion(event):
             screen.blit(card.image, (mouse_x + offset_x, mouse_y + y_offset))
 
         pygame.display.flip()
- 
+         
 def draw_timer_and_score():
     current_time = time.time() - start_time
     minutes = int(current_time // 60)
     seconds = int(current_time % 60)
     time_text = f"Time: {minutes:02}:{seconds:02}"
     score_text = f"Score: {score}"
-
+    move_text = f"Moves: {moves}"
+    
     font = pygame.font.SysFont('Arial', 24)
     time_surface = font.render(time_text, True, (255, 255, 255))
     score_surface = font.render(score_text, True, (255, 255, 255))
+    move_surface = font.render(move_text, True, (255, 255, 255))
 
     screen.blit(time_surface, (1000, 20))
     screen.blit(score_surface, (1000, 50))
+    screen.blit(move_surface, (1000, 80))
  
 def draw_game():
     screen.blit(background_image, (0, 0))
@@ -175,7 +183,7 @@ def draw_game():
     draw_timer_and_score()
 
 running = True
-while running:
+while running: 
     events = pygame.event.get() 
     if pause_menu.is_paused:
         pause_menu.handle_events(screen,events)
