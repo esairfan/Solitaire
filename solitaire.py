@@ -27,8 +27,7 @@ stock_and_waste = StockAndWaste(deck)
  
 start_time = time.time()
 score = 0
-moves = 0 
-font = pygame.font.SysFont("Arial", 30)
+moves = 0  
 events = []
 selected_cards = []
 selected_column = None
@@ -161,7 +160,27 @@ def handle_mouse_motion(event):
             screen.blit(card.image, (mouse_x + offset_x, mouse_y + y_offset))
 
         pygame.display.flip()
-         
+        
+def check_win_condition(): 
+    return all(len(foundation.cards) == 13 for foundation in foundations)
+
+def display_win_message(): 
+    
+    font = pygame.font.SysFont('Forte', 60)
+    win_text = font.render("You Won the Game!", True, (255, 215, 0))  
+    win_text_rect = win_text.get_rect(center=(width // 2, height // 2))
+    screen.blit(win_text, win_text_rect)
+    pygame.display.flip()
+    
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                waiting = False
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()     
+     
 def draw_timer_and_score():
     current_time = time.time() - start_time
     minutes = int(current_time // 60)
@@ -170,12 +189,12 @@ def draw_timer_and_score():
     score_text = f"Score: {score}"
     move_text = f"Moves: {moves}"
     
-    font = pygame.font.SysFont('Arial', 24)
+    font = pygame.font.SysFont('Forte', 24)
     time_surface = font.render(time_text, True, (255, 255, 255))
     score_surface = font.render(score_text, True, (255, 255, 255))
     move_surface = font.render(move_text, True, (255, 255, 255))
 
-    screen.blit(time_surface, (1000, 20))
+    screen.blit(time_surface, (1000, 700))
     screen.blit(score_surface, (1000, 50))
     screen.blit(move_surface, (1000, 80))
  
@@ -193,6 +212,12 @@ while running:
         pause_menu.handle_events(screen,events)
     else:
         draw_game()
+        
+        if check_win_condition():
+            display_win_message()
+            pygame.quit()
+            sys.exit()
+            
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
