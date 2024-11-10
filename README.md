@@ -45,8 +45,38 @@ A digital implementation of the classic Solitaire card game developed using Pyth
 1. Clone the repository:
    ```bash
    git clone https://gitlab.com/esairfan/cse200m24pid104.git
-   # Installation
-
+   
 2. Install dependencies:
    ```bash
    pip install pygame
+
+3.Run the Game 
+ ```bash
+   python solitaire.py
+
+## Controls
+
+- *Click and Drag*: Move cards between tableau and foundation piles.
+- *Escape*: Pause the game.
+
+## Mission List
+
+- *Score 200 points*: Reach a score of 200.
+- *Move all four aces within 30 moves*: Move all aces to the foundation early.
+- *Empty stock and waste piles*: Remove all cards from these piles.
+
+## Future Enhancements
+
+- Additional missions and levels of difficulty.
+- Enhanced sound effects and animations.
+
+## Contact
+
+For questions, suggestions, or issues, please contact the developer:
+
+- *Email*: [ibrahimirfan815@gmail.com](mailto:ibrahimirfan815@gmail.com)
+- *GitHub*: [github.com/esairfan](https://github.com/esairfan)
+- *LinkedIn*: [linkedin.com/in/esa-irfan-902108295](https://www.linkedin.com/in/esa-irfan-902108295)
+
+Feel free to reach out with any feedback or ideas for future enhancements!
+
