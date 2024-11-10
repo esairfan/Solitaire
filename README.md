@@ -40,20 +40,6 @@ A digital implementation of the classic Solitaire card game developed using Pyth
 - *Interactive Elements*: Start, pause, and mission displays, along with score and moves counter.
 - *Graphical Interface*: Cards are animated, and the game has a visually engaging background.
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://gitlab.com/esairfan/cse200m24pid104.git
-   
-2. Install dependencies:
-   ```bash
-   pip install pygame
-
-3.Run the Game 
-   ```bash
-   python solitaire.py
-
 ## Controls
 
 - *Click and Drag*: Move cards between tableau and foundation piles.
@@ -79,4 +65,17 @@ For questions, suggestions, or issues, please contact the developer:
 - *LinkedIn*: [linkedin.com/in/esa-irfan-902108295](https://www.linkedin.com/in/esa-irfan-902108295)
 
 Feel free to reach out with any feedback or ideas for future enhancements!
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://gitlab.com/esairfan/cse200m24pid104.git
+   
+2. Install dependencies:
+   ```bash
+   pip install pygame
+
+3.Run the Game 
+   ```bash
+   python solitaire.py
 
