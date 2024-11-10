@@ -51,7 +51,7 @@ A digital implementation of the classic Solitaire card game developed using Pyth
    pip install pygame
 
 3.Run the Game 
- ```bash
+   ```bash
    python solitaire.py
 
 ## Controls
